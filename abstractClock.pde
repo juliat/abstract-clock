@@ -29,12 +29,14 @@ void setup() {
   minutesWave = new Wave(15.0, 1, 0, 0.00);
   lastRolloverTime = 0; 
   hoursWaves = hoursWaves();
+  background(255); 
 }
  
 void draw() {
-  background(255); 
+  int opacity = (s%2)*10;
+  fill(255, opacity);
+  rect(0,0,width,height);
   noFill();
-  smooth();
  
   //-------------------------------------------------
   // Fetch the components of the time (hours, minutes, seconds, milliseconds).
@@ -55,7 +57,11 @@ void draw() {
   drawTime();
  
   secondsWave.update();
+  pushMatrix();
+  translate(0, height/3);
   secondsWave.display();
+  popMatrix();
+  
   minutesWave.update();
   minutesWave.display();
   

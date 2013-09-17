@@ -34,6 +34,7 @@ class Wave {
   }
   
   void display() {
+    noFill();
     beginShape();
     // A simple way to draw the wave with an ellipse at each location
     for (int x = 0; x < yvalues.length; x++) {
