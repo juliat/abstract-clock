@@ -10,13 +10,12 @@ class Wave {
   
   Wave(float thisAmplitude, float numWavesOnScreen, float startAngle, float thisAV) {
     w = width;
-    xspacing = 1;
+    xspacing = 10;
     theta = startAngle;
     angularVelocity = thisAV;
     
     amplitude = thisAmplitude;
     float period = width/numWavesOnScreen;
-    
     dx = (TWO_PI / period) * xspacing;
     yvalues = new float[w/xspacing];
   }
@@ -34,6 +33,7 @@ class Wave {
   }
   
   void display() {
+    smooth();
     noFill();
     beginShape();
     // A simple way to draw the wave with an ellipse at each location

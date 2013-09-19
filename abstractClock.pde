@@ -16,6 +16,7 @@ ArrayList<Wave> hoursWaves;
 
 void setup() {
   size(640, 360);
+  stroke(120);
   
   // Fetch the components of the time (hours, minutes, seconds, milliseconds).
   // Incidentally, you can also get day(), month(), year(), etc. 
@@ -23,9 +24,11 @@ void setup() {
   m = minute(); 
   s = second(); 
   
-  framesPerSecond = 30;
+  framesPerSecond = 60;
+  frameRate(framesPerSecond);
+  
   // arguments for Wave constructor are amplitude, numWavesOnScreen, startAngle, howFrequentlyExitingScreen
-  secondsWave = new Wave(10.0, 1, 0, 0.06);
+  secondsWave = new Wave(70.0, 1, 0, 0.03);
   minutesWave = new Wave(15.0, 1, 0, 0.00);
   lastRolloverTime = 0; 
   hoursWaves = hoursWaves();
@@ -33,9 +36,7 @@ void setup() {
 }
  
 void draw() {
-  int opacity = (s%2)*10;
-  fill(255, opacity);
-  rect(0,0,width,height);
+  background(255); 
   noFill();
  
   //-------------------------------------------------
@@ -56,9 +57,14 @@ void draw() {
   
   drawTime();
  
+  float scaledAmplitude = map(s, 0, 60, 0, PI);
+  float heightFactor = 10;
+  println("s " + s + " scaled amplitude " + scaledAmplitude);
+  secondsWave.amplitude = scaledAmplitude * heightFactor;
   secondsWave.update();
   pushMatrix();
-  translate(0, height/3);
+  // int dy = height/3;
+  translate(0, height/5.0);
   secondsWave.display();
   popMatrix();
   
@@ -70,7 +76,7 @@ void draw() {
     hWave.update();
     pushMatrix();
     float startY = (height/h)*-1;
-    translate(0, startY + (-10*(i^2)));
+    translate(0, startY + (-10*(i^3)));
     hWave.display();
     popMatrix();
   }
