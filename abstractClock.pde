@@ -38,9 +38,15 @@ void draw() {
   
   pushMatrix();
   translate(0, height/2);
-  
+  /* 
+  float periodInSeconds = 60.0; 
+  float periodInMilliseconds = periodInSeconds * 1000.0; 
+  float secondsVShift = sin(TWO_PI * millis()/periodInMilliseconds);
+  secondsWave.verticalShift = secondsVShift;
+  */
   secondsWave.update();
   secondsWave.display();
+  
   minutesWave.update();
   minutesWave.display();
   for (int i = 0; i < hoursWaves.size(); i++) {

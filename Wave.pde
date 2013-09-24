@@ -37,11 +37,12 @@ class Wave {
     noFill();
 
     // draw points that make up the curve
-    beginShape();
+    beginShape(LINES);
     for (int pointNum = 0; pointNum < points.size(); pointNum++) {
       PVector point = points.get(pointNum);
       vertex(point.x, point.y);
     }
     endShape();
   }
+  
 }
