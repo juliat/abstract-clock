@@ -15,31 +15,81 @@ ArrayList<Wave> hoursWaves;
 void setup() {
   size(640, 360);
   stroke(120);
+  setupGlobalTimes();
   
-  // Fetch the components of the time (hours, minutes, seconds, milliseconds).
-  // Incidentally, you can also get day(), month(), year(), etc. 
-  h = hour(); 
-  m = minute(); 
-  s = second(); 
+  // initialize objects
+  hoursWaves = createHoursWaves();
+  minutesWave = createMinutesWave();
+  secondsWave = createSecondsWave();
   
-  // arguments for Wave constructor are (amplitude, frequency, horizontalShift, verticalShift)
-  
-
   lastRolloverTime = 0; 
-  background(255); 
 }
  
 void draw() {
   background(255); 
   noFill();
  
-  //-------------------------------------------------
+  setupGlobalTimes();
+  // draw time as text for debugging
+  drawTime();
+  
+  pushMatrix();
+  translate(0, height/2);
+  
+  secondsWave.update();
+  secondsWave.display();
+  minutesWave.update();
+  minutesWave.display();
+  for (int i = 0; i < hoursWaves.size(); i++) {
+    Wave hWave = hoursWaves.get(i);
+    hWave.update();
+    hWave.display();
+  }
+  
+  popMatrix();
+  noLoop();
+}
+
+Wave createSecondsWave() {
+  float amp = 30;
+  float freq = 2;
+  // arguments for Wave constructor are (amplitude, frequency, horizontalShift, verticalShift, pointSpacing)
+  Wave sWave = new Wave(amp, freq, 0, (height/3), 5);
+  return sWave;
+}
+
+Wave createMinutesWave() {
+  float amplitude = 16;
+  float frequency = 2;
+  int pointSpacing = 5;
+  Wave mWave = new Wave(amplitude, frequency, 0, 0, pointSpacing);
+  return mWave;
+}
+
+ArrayList<Wave> createHoursWaves() {
+  ArrayList<Wave> hoursWaves= new ArrayList<Wave>();
+  // for every hour but the current one, draw a very slow moving wave at the top of the screen
+  for (int i = 0; i < h; i++) {
+    // arguments for Wave constructor are (amplitude, frequency, horizontalShift, verticalShift, pointSpacing)
+    float amplitude = 50;
+    float frequency = 6;
+    float vShift = -1*(height/3);
+    int pointSpacing = 5;
+    Wave hWave = new Wave(amplitude, frequency, 0, vShift, pointSpacing);
+    hoursWaves.add(hWave);  
+  }
+  return hoursWaves;
+}
+
+void setupGlobalTimes() {
   // Fetch the components of the time (hours, minutes, seconds, milliseconds).
   // Incidentally, you can also get day(), month(), year(), etc. 
   h = hour(); 
   m = minute(); 
   s = second(); 
- 
+}
+
+void setMils(){
   // The millis() are not synchronized with the clock time. 
   // Instead, the millis() represent the time since the program started. Grrr. 
   // To approximate the "clock millis", we have to check when the seconds roll over. 
@@ -48,26 +98,12 @@ void draw() {
   }
   mils = millis() - lastRolloverTime;
   prevSecond = s;
-  
-  // draw time as text for debugging
-  drawTime();
- 
-
-}
-
-ArrayList<Wave> hoursWaves() {
-  ArrayList<Wave> hoursWaves= new ArrayList<Wave>();
-  // for every hour but the current one, draw a very slow moving wave at the top of the screen
-  for (int i = 0; i < h; i++) {
-    Wave hWave = 
-    hoursWaves.add(hWave);  
-  }
-  return hoursWaves;
 }
 
 
 // just here to help develop and debug
 void drawTime() {
+  setMils();
   //-------------------------------------------------
   // Assemble a string to display the time conventionally.
   String hourStr   = nf(((h > 12)? h-12:h), 2); // format String with 2 digits
@@ -79,7 +115,6 @@ void drawTime() {
   theTimeString += "." + milsStr + " " + ampmStr; 
  
   fill (0); 
-  textAlign (CENTER); 
   text (theTimeString, width/5, 10); 
   noFill();
 }
