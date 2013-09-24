@@ -4,8 +4,6 @@ int prevSecond;
 int lastRolloverTime; 
 int mils;
 
-int framesPerSecond;
-
 int h;
 int m;
 int s;
@@ -24,14 +22,10 @@ void setup() {
   m = minute(); 
   s = second(); 
   
-  framesPerSecond = 60;
-  frameRate(framesPerSecond);
+  // arguments for Wave constructor are (amplitude, frequency, horizontalShift, verticalShift)
   
-  // arguments for Wave constructor are amplitude, numWavesOnScreen, startAngle, howFrequentlyExitingScreen
-  secondsWave = new Wave(70.0, 1, 0, 0.03);
-  minutesWave = new Wave(15.0, 1, 0, 0.00);
+
   lastRolloverTime = 0; 
-  hoursWaves = hoursWaves();
   background(255); 
 }
  
@@ -55,46 +49,24 @@ void draw() {
   mils = millis() - lastRolloverTime;
   prevSecond = s;
   
+  // draw time as text for debugging
   drawTime();
  
-  float scaledAmplitude = map(s, 0, 60, 0, PI);
-  float heightFactor = 10;
-  println("s " + s + " scaled amplitude " + scaledAmplitude);
-  secondsWave.amplitude = scaledAmplitude * heightFactor;
-  secondsWave.update();
-  pushMatrix();
-  // int dy = height/3;
-  translate(0, height/5.0);
-  secondsWave.display();
-  popMatrix();
-  
-  minutesWave.update();
-  minutesWave.display();
-  
-  for (int i = 0; i < hoursWaves.size(); i++) {
-    Wave hWave= hoursWaves.get(i);
-    hWave.update();
-    pushMatrix();
-    float startY = (height/h)*-1;
-    translate(0, startY + (-10*(i^3)));
-    hWave.display();
-    popMatrix();
-  }
+
 }
 
 ArrayList<Wave> hoursWaves() {
   ArrayList<Wave> hoursWaves= new ArrayList<Wave>();
   // for every hour but the current one, draw a very slow moving wave at the top of the screen
   for (int i = 0; i < h; i++) {
-    float period =  1;// hours waves should go through --- pixels before the wave repeats
-    float startAngle = 0.33*i;
-    Wave hWave = new Wave(5.0, period, startAngle, 0.0001*i);
+    Wave hWave = 
     hoursWaves.add(hWave);  
   }
   return hoursWaves;
 }
 
 
+// just here to help develop and debug
 void drawTime() {
   //-------------------------------------------------
   // Assemble a string to display the time conventionally.
