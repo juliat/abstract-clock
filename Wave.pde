@@ -16,16 +16,17 @@ class Wave {
   }
   
   // gets the y value for a given x position on this wave
-  float getY(float x) {
-    float y = amplitude * sin((frequency*x) + horizontalShift) + verticalShift;
+  float getY(float xAngle) {
+    float y = amplitude * sin((frequency * xAngle) + horizontalShift) + verticalShift;
     return y;
   }
   
   // calculate and store positions for each point that's a part of this wave
   void update() {
     // for each x position across the window, get the y outputted by the wave function
-    for (int x=0; x < width; x+=pointSpacing) {
-      PVector xyPoint = new PVector(x, getY(x));
+    for (int x=0; x < width; x++) {
+      float xAngle = map(x, 0, width, 0, TWO_PI);
+      PVector xyPoint = new PVector(x, getY(xAngle));
       points.add(xyPoint);
     }
   }
@@ -39,7 +40,7 @@ class Wave {
     beginShape();
     for (int pointNum = 0; pointNum < points.size(); pointNum++) {
       PVector point = points.get(pointNum);
-      curveVertex(point.x, point.y);
+      vertex(point.x, point.y);
     }
     endShape();
   }

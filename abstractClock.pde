@@ -11,9 +11,12 @@ int s;
 Wave secondsWave;
 Wave minutesWave;
 ArrayList<Wave> hoursWaves;
+float baseWaveHeight;
 
 void setup() {
   size(640, 360);
+  baseWaveHeight = height/8;
+  
   stroke(120);
   setupGlobalTimes();
   
@@ -47,20 +50,20 @@ void draw() {
   }
   
   popMatrix();
-  noLoop();
+  // noLoop();
 }
 
 Wave createSecondsWave() {
-  float amp = 30;
-  float freq = 2;
+  float amp = baseWaveHeight;
+  float freq = 0.75;
   // arguments for Wave constructor are (amplitude, frequency, horizontalShift, verticalShift, pointSpacing)
   Wave sWave = new Wave(amp, freq, 0, (height/3), 5);
   return sWave;
 }
 
 Wave createMinutesWave() {
-  float amplitude = 16;
-  float frequency = 2;
+  float amplitude = baseWaveHeight/2;
+  float frequency = 1.5;
   int pointSpacing = 5;
   Wave mWave = new Wave(amplitude, frequency, 0, 0, pointSpacing);
   return mWave;
@@ -71,9 +74,9 @@ ArrayList<Wave> createHoursWaves() {
   // for every hour but the current one, draw a very slow moving wave at the top of the screen
   for (int i = 0; i < h; i++) {
     // arguments for Wave constructor are (amplitude, frequency, horizontalShift, verticalShift, pointSpacing)
-    float amplitude = 50;
-    float frequency = 6;
-    float vShift = -1*(height/3);
+    float amplitude = baseWaveHeight/4;
+    float frequency = 1;
+    float vShift = -1*(height/2) + (i*(baseWaveHeight/5));
     int pointSpacing = 5;
     Wave hWave = new Wave(amplitude, frequency, 0, vShift, pointSpacing);
     hoursWaves.add(hWave);  
