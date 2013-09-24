@@ -54,21 +54,22 @@ void draw() {
   secondsWave.update();
   secondsWave.display();
   
-  minutesWave.update();
-  minutesWave.display();
-  
-  
+  //minutesWave.update();
+  //minutesWave.display();
+   
   millisToCrossScreen = 60.0 * 1000.0;
   float hoursHShift = getCurrentHShift(millisToCrossScreen);
   for (int i = 0; i < hoursWaves.size(); i++) {
     Wave hWave = hoursWaves.get(i);
     // hWave.horizontalShift = hoursHShift;
-    hWave.update();
-    hWave.display();
+    //hWave.update();
+    //hWave.display();
   }
   
   popMatrix();
  //  noLoop();
+ 
+ line(0,0, mouseX, mouseY); 
 }
 
 float getCurrentHShift(float millisToCrossScreen) {

@@ -23,6 +23,7 @@ class Wave {
   
   // calculate and store positions for each point that's a part of this wave
   void update() {
+    points.clear();
     // for each x position across the window, get the y outputted by the wave function
     for (int x=0; x < width; x++) {
       float xAngle = map(x, 0, width, 0, TWO_PI);
@@ -35,6 +36,7 @@ class Wave {
     // setup drawing settings
     smooth();
     noFill();
+    println("points.size() = " + points.size()); 
 
     // draw points that make up the curve
     beginShape(LINES);
