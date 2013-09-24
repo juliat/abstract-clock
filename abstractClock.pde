@@ -30,34 +30,53 @@ void setup() {
  
 void draw() {
   background(255); 
-  noFill();
  
+  setMils();
   setupGlobalTimes();
   // draw time as text for debugging
   drawTime();
   
   pushMatrix();
-  translate(0, height/2);
-  /* 
+  // int hShift = mils();
+  translate(0, height/2); // work relative to horizontal venter at middle
+  
   float periodInSeconds = 60.0; 
   float periodInMilliseconds = periodInSeconds * 1000.0; 
-  float secondsVShift = sin(TWO_PI * millis()/periodInMilliseconds);
+  float timeBasedSinusoidallyVaryingQuantity = sin(TWO_PI * millis()/periodInMilliseconds);
+  
+  float secondsVShift = map(timeBasedSinusoidallyVaryingQuantity, -1, 1, -(height/4), (height/4));
   secondsWave.verticalShift = secondsVShift;
-  */
+  
+  float millisToCrossScreen = 1000.0;
+  float secondsHShift = getCurrentHShift(millisToCrossScreen);
+  
+  // secondsWave.horizontalShift = secondsHShift;
   secondsWave.update();
   secondsWave.display();
   
   minutesWave.update();
   minutesWave.display();
+  
+  
+  millisToCrossScreen = 60.0 * 1000.0;
+  float hoursHShift = getCurrentHShift(millisToCrossScreen);
   for (int i = 0; i < hoursWaves.size(); i++) {
     Wave hWave = hoursWaves.get(i);
+    // hWave.horizontalShift = hoursHShift;
     hWave.update();
     hWave.display();
   }
   
   popMatrix();
-  // noLoop();
+ //  noLoop();
 }
+
+float getCurrentHShift(float millisToCrossScreen) {
+  float currentCrossProportion = millis()/millisToCrossScreen;
+  float hShift = map(currentCrossProportion, 0, 1, 0, width);
+  return hShift;
+}
+  
 
 Wave createSecondsWave() {
   float amp = baseWaveHeight;
