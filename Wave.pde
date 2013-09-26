@@ -17,7 +17,7 @@ class Wave {
   
   // gets the y value for a given x position on this wave
   float getY(float xAngle) {
-    float y = amplitude * sin((frequency * xAngle) + horizontalShift) + verticalShift;
+    float y = amplitude * sin((frequency * xAngle) - horizontalShift) + verticalShift;
     return y;
   }
   
@@ -36,7 +36,7 @@ class Wave {
     // setup drawing settings
     smooth();
     noFill();
-    println("points.size() = " + points.size()); 
+    // println("points.size() = " + points.size()); 
 
     // draw points that make up the curve
     beginShape(LINES);

@@ -9,7 +9,7 @@ int m;
 int s;
 
 Wave secondsWave;
-Wave minutesWave;
+ArrayList<Wave> minutesWaves;
 ArrayList<Wave> hoursWaves;
 float baseWaveHeight;
 
@@ -22,7 +22,7 @@ void setup() {
   
   // initialize objects
   hoursWaves = createHoursWaves();
-  minutesWave = createMinutesWave();
+  minutesWaves = createMinutesWaves();
   secondsWave = createSecondsWave();
   
   lastRolloverTime = 0; 
@@ -44,55 +44,69 @@ void draw() {
   float periodInMilliseconds = periodInSeconds * 1000.0; 
   float timeBasedSinusoidallyVaryingQuantity = sin(TWO_PI * millis()/periodInMilliseconds);
   
-  float secondsVShift = map(timeBasedSinusoidallyVaryingQuantity, -1, 1, -(height/4), (height/4));
+  /* calculate and update seconds waves */
+  float secondsVShift = map(timeBasedSinusoidallyVaryingQuantity, -1, 1, 0, (height/2.8));
   secondsWave.verticalShift = secondsVShift;
   
   float millisToCrossScreen = 1000.0;
   float secondsHShift = getCurrentHShift(millisToCrossScreen);
   
-  // secondsWave.horizontalShift = secondsHShift;
+  secondsWave.horizontalShift = secondsHShift;
   secondsWave.update();
   secondsWave.display();
   
-  //minutesWave.update();
-  //minutesWave.display();
-   
-  millisToCrossScreen = 60.0 * 1000.0;
+  /* calculate and update minutes wave */
+  millisToCrossScreen = 3 * 1000.0;
+  for (int i = 0; i < minutesWaves.size(); i+=5) {
+    Wave minutesWave = minutesWaves.get(i);
+    float minutesHShift = getCurrentHShift(millisToCrossScreen);
+    minutesWave.horizontalShift = minutesHShift;
+    minutesWave.update();
+    minutesWave.display();
+  }
+  
+  /* calculate and update hours wave */ 
+  millisToCrossScreen = 30.0 * 1000.0;
   float hoursHShift = getCurrentHShift(millisToCrossScreen);
   for (int i = 0; i < hoursWaves.size(); i++) {
     Wave hWave = hoursWaves.get(i);
-    // hWave.horizontalShift = hoursHShift;
-    //hWave.update();
-    //hWave.display();
-  }
-  
+    hWave.horizontalShift = hoursHShift*(i/3);
+    hWave.update();
+    hWave.display();
+  }  
   popMatrix();
- //  noLoop();
- 
- line(0,0, mouseX, mouseY); 
 }
 
 float getCurrentHShift(float millisToCrossScreen) {
-  float currentCrossProportion = millis()/millisToCrossScreen;
-  float hShift = map(currentCrossProportion, 0, 1, 0, width);
+  float hShift = millis()/millisToCrossScreen;
   return hShift;
 }
   
 
 Wave createSecondsWave() {
-  float amp = baseWaveHeight;
+  float amp = baseWaveHeight*1.1;
   float freq = 0.75;
   // arguments for Wave constructor are (amplitude, frequency, horizontalShift, verticalShift, pointSpacing)
-  Wave sWave = new Wave(amp, freq, 0, (height/3), 5);
+  Wave sWave = new Wave(amp, freq, 0, (height/1.5), 5);
   return sWave;
 }
 
-Wave createMinutesWave() {
-  float amplitude = baseWaveHeight/2;
-  float frequency = 1.5;
-  int pointSpacing = 5;
-  Wave mWave = new Wave(amplitude, frequency, 0, 0, pointSpacing);
-  return mWave;
+ArrayList<Wave> createMinutesWaves() {
+  ArrayList<Wave> minutesWaves= new ArrayList<Wave>();
+  println("m " + m);
+  for (int i=0; i < m; i++) {
+    println("i " + i);
+    float amplitude = baseWaveHeight/3;
+    float frequency = 1.5;
+    int pointSpacing = 5;
+    float allShiftUp = -1*(height/10);
+    float perWaveOffset = i*(baseWaveHeight/30);
+    float vShift = allShiftUp + perWaveOffset;
+    float hShift = i*(width/20);
+    Wave mWave = new Wave(amplitude, frequency, hShift, vShift, pointSpacing);
+    minutesWaves.add(mWave);
+  }
+  return minutesWaves;
 }
 
 ArrayList<Wave> createHoursWaves() {
@@ -102,9 +116,11 @@ ArrayList<Wave> createHoursWaves() {
     // arguments for Wave constructor are (amplitude, frequency, horizontalShift, verticalShift, pointSpacing)
     float amplitude = baseWaveHeight/4;
     float frequency = 1;
-    float vShift = -1*(height/2) + (i*(baseWaveHeight/5));
+    float perWaveOffset = (i*(baseWaveHeight/4));
+    float allShiftUp = -1*(height/2); 
+    float vShift = allShiftUp + perWaveOffset;
     int pointSpacing = 5;
-    Wave hWave = new Wave(amplitude, frequency, 0, vShift, pointSpacing);
+    Wave hWave = new Wave(amplitude, frequency, (i/3), vShift, pointSpacing);
     hoursWaves.add(hWave);  
   }
   return hoursWaves;
