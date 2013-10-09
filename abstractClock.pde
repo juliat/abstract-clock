@@ -34,7 +34,7 @@ void draw() {
   setMils();
   setupGlobalTimes();
   // draw time as text for debugging
-  drawTime();
+  // drawTime();
   
   pushMatrix();
   // int hShift = mils();
@@ -45,7 +45,7 @@ void draw() {
   float timeBasedSinusoidallyVaryingQuantity = sin(TWO_PI * millis()/periodInMilliseconds);
   
   /* calculate and update seconds waves */
-  float secondsVShift = map(timeBasedSinusoidallyVaryingQuantity, -1, 1, 0, (height/2.8));
+  float secondsVShift = map(timeBasedSinusoidallyVaryingQuantity, -1, 1, 0, (height/5));
   secondsWave.verticalShift = secondsVShift;
   
   float millisToCrossScreen = 1000.0;
@@ -53,6 +53,11 @@ void draw() {
   
   secondsWave.horizontalShift = secondsHShift;
   secondsWave.update();
+  
+  Wave bottomMinutesWave = minutesWaves.get(0);
+  float mergeDegree = millis()/periodInMilliseconds;
+  secondsWave.mergeWaves(bottomMinutesWave, mergeDegree);
+  
   secondsWave.display();
   
   /* calculate and update minutes wave */
@@ -70,7 +75,7 @@ void draw() {
   float hoursHShift = getCurrentHShift(millisToCrossScreen);
   for (int i = 0; i < hoursWaves.size(); i++) {
     Wave hWave = hoursWaves.get(i);
-    hWave.horizontalShift = hoursHShift*(i/3);
+    // hWave.horizontalShift = hoursHShift*(i/3);
     hWave.update();
     hWave.display();
   }  
@@ -87,7 +92,7 @@ Wave createSecondsWave() {
   float amp = baseWaveHeight*1.1;
   float freq = 0.75;
   // arguments for Wave constructor are (amplitude, frequency, horizontalShift, verticalShift, pointSpacing)
-  Wave sWave = new Wave(amp, freq, 0, (height/1.5), 5);
+  Wave sWave = new Wave(amp, freq, 0, 0, 5);
   return sWave;
 }
 
@@ -120,7 +125,8 @@ ArrayList<Wave> createHoursWaves() {
     float allShiftUp = -1*(height/2); 
     float vShift = allShiftUp + perWaveOffset;
     int pointSpacing = 5;
-    Wave hWave = new Wave(amplitude, frequency, (i/3), vShift, pointSpacing);
+    int hShift = 0; // (i/3)
+    Wave hWave = new Wave(amplitude, frequency, hShift, vShift, pointSpacing);
     hoursWaves.add(hWave);  
   }
   return hoursWaves;

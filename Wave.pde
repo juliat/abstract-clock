@@ -32,6 +32,24 @@ class Wave {
     }
   }
   
+  // take this wave and make it gradually more similar with another wave
+  void mergeWaves(Wave anotherWave, float degree) {
+    ArrayList<PVector> newPoints = new ArrayList<PVector>();
+    // average points along this wave and the other wave's path to the degree
+    // passed into the function
+    for (int i = 0; i < points.size(); i++) {
+      if (i < anotherWave.points.size()) {
+        PVector thisPoint = points.get(i);
+        PVector thatPoint = anotherWave.points.get(i);
+        float mergeX = lerp(thisPoint.x, thatPoint.x, degree);
+        float mergeY = lerp(thisPoint.y, thatPoint.y, degree);
+        PVector mergePoint = new PVector(mergeX, mergeY);
+        newPoints.add(mergePoint);
+      }
+    }
+    points = newPoints;
+  }
+  
   void display() {
     // setup drawing settings
     smooth();
