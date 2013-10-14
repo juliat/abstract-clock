@@ -58,6 +58,7 @@ void draw() {
   float mergeDegree = millis()/periodInMilliseconds;
   secondsWave.mergeWaves(bottomMinutesWave, mergeDegree);
   
+  strokeWeight(2);
   secondsWave.display();
   
   /* calculate and update minutes wave */
@@ -67,6 +68,7 @@ void draw() {
     float minutesHShift = getCurrentHShift(millisToCrossScreen);
     minutesWave.horizontalShift = minutesHShift;
     minutesWave.update();
+    strokeWeight(1.5);
     minutesWave.display();
   }
   
@@ -77,6 +79,7 @@ void draw() {
     Wave hWave = hoursWaves.get(i);
     // hWave.horizontalShift = hoursHShift*(i/3);
     hWave.update();
+    strokeWeight(1);
     hWave.display();
   }  
   popMatrix();
