@@ -34,7 +34,7 @@ void draw() {
   setMils();
   setupGlobalTimes();
   // draw time as text for debugging
-  drawTime();
+  // drawTime();
   
   pushMatrix();
   // int hShift = mils();
@@ -45,7 +45,7 @@ void draw() {
   float timeBasedSinusoidallyVaryingQuantity = sin(TWO_PI * millis()/periodInMilliseconds);
   
   /* calculate and update seconds waves */
-  float secondsVShift = map(timeBasedSinusoidallyVaryingQuantity, -1, 1, height/2, (height/3));
+  float secondsVShift = map(timeBasedSinusoidallyVaryingQuantity, -1, 1, 0, (height/5));
   secondsWave.verticalShift = secondsVShift;
   
   float millisToCrossScreen = 1000.0;
@@ -63,8 +63,7 @@ void draw() {
   
   /* calculate and update minutes wave */
   millisToCrossScreen = 3 * 1000.0;
-  int minutesPerWave = 5;
-  for (int i = 0; i < minutesWaves.size(); i+=minutesPerWave) {
+  for (int i = 0; i < minutesWaves.size(); i+=5) {
     Wave minutesWave = minutesWaves.get(i);
     float minutesHShift = getCurrentHShift(millisToCrossScreen);
     minutesWave.horizontalShift = minutesHShift;
@@ -108,9 +107,9 @@ ArrayList<Wave> createMinutesWaves() {
     float amplitude = baseWaveHeight/3;
     float frequency = 1.5;
     int pointSpacing = 5;
-    float allShift = 1*(height/10);
+    float allShiftUp = -1*(height/10);
     float perWaveOffset = i*(baseWaveHeight/30);
-    float vShift = allShift + perWaveOffset;
+    float vShift = allShiftUp + perWaveOffset;
     float hShift = i*(width/20);
     Wave mWave = new Wave(amplitude, frequency, hShift, vShift, pointSpacing);
     minutesWaves.add(mWave);
@@ -173,3 +172,71 @@ void drawTime() {
   text (theTimeString, width/5, 10); 
   noFill();
 }
+class Wave {
+  float amplitude;
+  float frequency;
+  float horizontalShift;
+  float verticalShift;
+  int pointSpacing;
+  ArrayList<PVector> points;
+  
+  Wave(float thisAmplitude, float thisFrequency, float thisHorizontalShift, float thisVerticalShift, int thisPointSpacing) {
+   amplitude = thisAmplitude;
+   frequency = thisFrequency;
+   horizontalShift = thisHorizontalShift;
+   verticalShift = thisVerticalShift;
+   pointSpacing = thisPointSpacing;
+   points = new ArrayList<PVector>();
+  }
+  
+  // gets the y value for a given x position on this wave
+  float getY(float xAngle) {
+    float y = amplitude * sin((frequency * xAngle) - horizontalShift) + verticalShift;
+    return y;
+  }
+  
+  // calculate and store positions for each point that's a part of this wave
+  void update() {
+    points.clear();
+    // for each x position across the window, get the y outputted by the wave function
+    for (int x=0; x < width; x++) {
+      float xAngle = map(x, 0, width, 0, TWO_PI);
+      PVector xyPoint = new PVector(x, getY(xAngle));
+      points.add(xyPoint);
+    }
+  }
+  
+  // take this wave and make it gradually more similar with another wave
+  void mergeWaves(Wave anotherWave, float degree) {
+    ArrayList<PVector> newPoints = new ArrayList<PVector>();
+    // average points along this wave and the other wave's path to the degree
+    // passed into the function
+    for (int i = 0; i < points.size(); i++) {
+      if (i < anotherWave.points.size()) {
+        PVector thisPoint = points.get(i);
+        PVector thatPoint = anotherWave.points.get(i);
+        float mergeX = lerp(thisPoint.x, thatPoint.x, degree);
+        float mergeY = lerp(thisPoint.y, thatPoint.y, degree);
+        PVector mergePoint = new PVector(mergeX, mergeY);
+        newPoints.add(mergePoint);
+      }
+    }
+    points = newPoints;
+  }
+  
+  void display() {
+    // setup drawing settings
+    smooth();
+    noFill();
+    // println("points.size() = " + points.size()); 
+
+    // draw points that make up the curve
+    beginShape(LINES);
+    for (int pointNum = 0; pointNum < points.size(); pointNum++) {
+      PVector point = points.get(pointNum);
+      vertex(point.x, point.y);
+    }
+    endShape();
+  }
+}
+
