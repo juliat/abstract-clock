@@ -33,7 +33,7 @@ void draw() {
  
   setMils();
   setupGlobalTimes();
-  // draw time as text for debugging
+  // uncommen the line below to draw time as text for debugging
   // drawTime();
   
   pushMatrix();
@@ -45,7 +45,7 @@ void draw() {
   float timeBasedSinusoidallyVaryingQuantity = sin(TWO_PI * millis()/periodInMilliseconds);
   
   /* calculate and update seconds waves */
-  float secondsVShift = map(timeBasedSinusoidallyVaryingQuantity, -1, 1, 0, (height/5));
+  float secondsVShift = map(timeBasedSinusoidallyVaryingQuantity, -1, 1, height/2, (height/3));
   secondsWave.verticalShift = secondsVShift;
   
   float millisToCrossScreen = 1000.0;
@@ -54,16 +54,19 @@ void draw() {
   secondsWave.horizontalShift = secondsHShift;
   secondsWave.update();
   
-  Wave bottomMinutesWave = minutesWaves.get(0);
-  float mergeDegree = millis()/periodInMilliseconds;
-  secondsWave.mergeWaves(bottomMinutesWave, mergeDegree);
+  if (m != 0) {
+    Wave bottomMinutesWave = minutesWaves.get(0);
+    float mergeDegree = millis()/periodInMilliseconds;
+    secondsWave.mergeWaves(bottomMinutesWave, mergeDegree);
+  }
   
   strokeWeight(2);
   secondsWave.display();
   
   /* calculate and update minutes wave */
   millisToCrossScreen = 3 * 1000.0;
-  for (int i = 0; i < minutesWaves.size(); i+=5) {
+  int minutesPerWave = 5;
+  for (int i = 0; i < minutesWaves.size(); i+=minutesPerWave) {
     Wave minutesWave = minutesWaves.get(i);
     float minutesHShift = getCurrentHShift(millisToCrossScreen);
     minutesWave.horizontalShift = minutesHShift;
@@ -102,17 +105,20 @@ Wave createSecondsWave() {
 ArrayList<Wave> createMinutesWaves() {
   ArrayList<Wave> minutesWaves= new ArrayList<Wave>();
   println("m " + m);
-  for (int i=0; i < m; i++) {
-    println("i " + i);
-    float amplitude = baseWaveHeight/3;
-    float frequency = 1.5;
-    int pointSpacing = 5;
-    float allShiftUp = -1*(height/10);
-    float perWaveOffset = i*(baseWaveHeight/30);
-    float vShift = allShiftUp + perWaveOffset;
-    float hShift = i*(width/20);
-    Wave mWave = new Wave(amplitude, frequency, hShift, vShift, pointSpacing);
-    minutesWaves.add(mWave);
+  
+  if (m != 0) {
+    for (int i=0; i < m; i++) {
+      println("i " + i);
+      float amplitude = baseWaveHeight/3;
+      float frequency = 1.5;
+      int pointSpacing = 5;
+      float allShift = 1*(height/10);
+      float perWaveOffset = i*(baseWaveHeight/30);
+      float vShift = allShift + perWaveOffset;
+      float hShift = i*(width/20);
+      Wave mWave = new Wave(amplitude, frequency, hShift, vShift, pointSpacing);
+      minutesWaves.add(mWave);
+    }
   }
   return minutesWaves;
 }
@@ -120,17 +126,19 @@ ArrayList<Wave> createMinutesWaves() {
 ArrayList<Wave> createHoursWaves() {
   ArrayList<Wave> hoursWaves= new ArrayList<Wave>();
   // for every hour but the current one, draw a very slow moving wave at the top of the screen
-  for (int i = 0; i < h; i++) {
-    // arguments for Wave constructor are (amplitude, frequency, horizontalShift, verticalShift, pointSpacing)
-    float amplitude = baseWaveHeight/4;
-    float frequency = 1;
-    float perWaveOffset = (i*(baseWaveHeight/4));
-    float allShiftUp = -1*(height/2); 
-    float vShift = allShiftUp + perWaveOffset;
-    int pointSpacing = 5;
-    int hShift = 0; // (i/3)
-    Wave hWave = new Wave(amplitude, frequency, hShift, vShift, pointSpacing);
-    hoursWaves.add(hWave);  
+  if (h != 0) {
+    for (int i = 0; i < h; i++) {
+      // arguments for Wave constructor are (amplitude, frequency, horizontalShift, verticalShift, pointSpacing)
+      float amplitude = baseWaveHeight/4;
+      float frequency = 1;
+      float perWaveOffset = (i*(baseWaveHeight/4));
+      float allShiftUp = -1*(height/2); 
+      float vShift = allShiftUp + perWaveOffset;
+      int pointSpacing = 5;
+      int hShift = 0; // (i/3)
+      Wave hWave = new Wave(amplitude, frequency, hShift, vShift, pointSpacing);
+      hoursWaves.add(hWave);  
+    }
   }
   return hoursWaves;
 }
@@ -138,9 +146,9 @@ ArrayList<Wave> createHoursWaves() {
 void setupGlobalTimes() {
   // Fetch the components of the time (hours, minutes, seconds, milliseconds).
   // Incidentally, you can also get day(), month(), year(), etc. 
-  h = hour(); 
-  m = minute(); 
-  s = second(); 
+  h = 15;//hour(); 
+  m = 7;///minute(); 
+  s = 30;// second(); 
 }
 
 void setMils(){
